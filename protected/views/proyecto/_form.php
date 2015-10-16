@@ -1,0 +1,45 @@
+<div class="form">
+
+<?php $form=$this->beginWidget('CActiveForm', array(
+	'id'=>'proyecto-form',
+	'enableAjaxValidation'=>false,
+)); ?>
+
+	<p class="note">Los campos con <span class="required">*</span> son obligatorios.</p>
+
+	<?php echo $form->errorSummary($model); ?>
+
+	<div class="row">
+		<?php echo $form->labelEx($model,'codigo_sne'); ?>
+		<?php echo $form->textField($model,'codigo_sne'); ?>
+		<?php echo $form->error($model,'codigo_sne'); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->labelEx($model,'nombre'); ?>
+		<?php echo $form->textArea($model,'nombre',array('rows'=>6, 'cols'=>50)); ?>
+		<?php echo $form->error($model,'nombre'); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->labelEx($model,'estatus'); ?>
+		<?php echo $form->dropDownList($model,'estatus', CHtml::listData(Estatus::model()->findAll(),'codigo','estatus'), array(
+			'empty'=>'(Seleccione un estatus)',
+		)); ?>
+		<?php echo $form->error($model,'estatus'); ?>
+	</div>
+
+	<div class="row buttons">
+		<?php 
+			$this->widget('zii.widgets.jui.CJuiButton', array(
+			    'buttonType'=>'submit',
+			    'name'=>'btnSubmit',
+			    'value'=>'1',
+			    'caption'=>$model->isNewRecord ? 'Guardar' : 'Actualizar',
+			));
+		?>
+	</div>
+
+<?php $this->endWidget(); ?>
+
+</div><!-- form -->

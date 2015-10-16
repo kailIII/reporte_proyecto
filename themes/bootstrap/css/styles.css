@@ -1,0 +1,11 @@
+#banner
+{
+	background: url('../images/banner.svg') no-repeat center;
+	background-size: 170% 200%;
+	background-position: -30px;
+	height:100px;
+	width:auto;
+}
+#page {
+    padding-top: 60px;
+}

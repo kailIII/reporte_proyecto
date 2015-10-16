@@ -1,0 +1,59 @@
+<h2><?php echo $proyecto->nombre; ?></h2>
+<?php
+	//Buscar la unidad ejecutora
+	$ue=UnidadEjecutora::model()->findByPk(Yii::app()->user->uel);
+?>
+<div class="row">
+	<h3><?php echo $ue->codigo_uel." - ".$ue->denominacion; ?></h3><!-- Nombre y codigo de la UE -->
+</div>
+<?php
+	foreach($proveedor as $llave => $valor)
+	{
+		echo "<h3>".$proveedor[$llave]['accion']."</h3>";
+
+		//widget con los registros
+		$this->widget('zii.widgets.grid.CGridView',array(
+			'id'=>'reportes-grid_'.$llave,
+			'dataProvider'=>$valor['dataProvider'], //Proveedor
+			'enablePagination'=>false, //Deshabilitar la paginación
+			'enableSorting'=>false, //Deshabilitar el ordenamiento
+			'columns'=>array(
+				'imputacion_presupuestaria',
+				array(
+					'name'=>'Producto o Servicio',
+					'type'=>'raw',
+					'value'=>function($data){
+						$val= MaterialesServicios::model()->findByPk($data->material_servicio)->descripcion;
+						return "<div style='width:160px;overflow:hidden;white-space:nowrap' title='$val'>".$val."</div>";
+					}
+				),
+				array(
+					'name'=>'Unidad de Medida',
+					'value'=>function($data){
+						$val=UnidadMedida::model()->findByPk($data->unidad_medida);
+						return $val->unidad_medida;
+					}
+				),
+				array(
+					'name'=>'Presentación',
+					'value'=>function($data){
+						$val=Presentacion::model()->findByPk($data->presentacion);
+						return $val->presentacion;
+					}
+				),
+				'precio_unitario',
+				'iva',
+				'trim_i',
+				'trim_ii',
+				'trim_iii',
+				'trim_iv',
+				'sub_total',
+				'total_iva',
+				'total',
+			),
+			'htmlOptions'=>array(
+				'style'=>'overflow-x:scroll;margin-bottom:20px'
+			)
+		));
+	}
+?>
