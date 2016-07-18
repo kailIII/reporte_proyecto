@@ -90,7 +90,9 @@ class ProyectoController extends Controller
 					'generalPartidaSubpartidaExcel',
 					'reporteTrimestral',
 					'trimestralPdf',
-					'trimestralExcel'
+					'trimestralExcel',
+					'generalTrimestral',
+					'generalTrimestralExcel',
 				),
 				'roles'=>array('1'),
 			),
@@ -1108,6 +1110,26 @@ class ProyectoController extends Controller
 		$iva=$this->devolverTrimestralIva($acciones);
 		//La vista
 		$this->renderPartial('_trimestralExcel',array('proyecto'=>$proyecto,'trimestral'=>$trimestral,'iva'=>$iva));
+	}
+
+	public function actionGeneralTrimestral()
+	{
+		//Layout
+		$this->layout='//layouts/column1';
+		//Proyecto
+		$proyectos=Proyecto::model()->findAll();		
+		//La vista
+		$this->render('generalTrimestral',array('proyectos'=>$proyectos));
+	}
+
+	public function actionGeneralTrimestralExcel()
+	{
+		//Layout
+		$this->layout='//layouts/column1';
+		//Proyecto
+		$proyectos=Proyecto::model()->findAll();		
+		//La vista
+		$this->renderPartial('generalTrimestralExcel',array('proyectos'=>$proyectos));
 	}
 
 	/**

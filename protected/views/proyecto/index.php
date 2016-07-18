@@ -11,6 +11,7 @@ if(Yii::app()->user->nivel==1) //Si es administrador
 		array('label'=>'Proyectos por Partida', 'url'=>array('totalProyectosPorPartidaSelect')),
 		array('label'=>'Proyectos y Acciones por Partida', 'url'=>array('totalProyectoAccionesPorPartida')),
 		array('label'=>'Total General por Partidas y Subpartidas', 'url'=>array('generalPartidaSubpartida')),
+		array('label'=>'General Trimestral', 'url'=>array('generalTrimestral')),
 	);
 }
 else
