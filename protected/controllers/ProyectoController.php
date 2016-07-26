@@ -315,6 +315,7 @@ class ProyectoController extends Controller
 		));
 		//Total de los proyectos
 		$totalProyectos=0.00;
+		$totalesProyectosAcciones="";
 		//
 		$pP=array();
 		$iva=array();
@@ -1177,10 +1178,17 @@ class ProyectoController extends Controller
 				//Buscar la partida 403
 				$boolPartida= $boolPartida || $this->in_array_r('403',$valor)? 1:0;
 			}
+
 			
 			//Si la accion no posee 403 incluirla
 			if(!$boolPartida)
-			{
+			{	
+				//PHP 5.3
+				if(empty($valor))
+				{
+					$valor['codigo_accion']=''; $valor['accion']=""; 
+				}
+
 				$v=array();
 				$v['codigo_accion']=$valor['codigo_accion'];
 				$v['accion']=$valor['accion'];

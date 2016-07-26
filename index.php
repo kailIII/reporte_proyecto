@@ -1,6 +1,12 @@
 <?php
-
-if (session_status() == PHP_SESSION_NONE)
+//PHP 5.4
+/*if (session_status() == PHP_SESSION_NONE)
+{
+    session_start();
+    $_SESSION['nombreBd'];
+}*/
+// PHP 5.3
+if(session_id() == '')
 {
     session_start();
     $_SESSION['nombreBd'];
@@ -9,7 +15,8 @@ if (session_status() == PHP_SESSION_NONE)
 if(!$_SESSION['nombreBd'] == '')
 {
 	// change the following paths if necessary
-	$yii=dirname(__FILE__).'/../YiiRoot/framework/yii.php';
+	$yii=dirname(__FILE__).'/../yii/framework/yii.php';
+	//echo $yii; exit();
 	$config=dirname(__FILE__).'/protected/config/main.php';
 
 	// remove the following lines when in production mode

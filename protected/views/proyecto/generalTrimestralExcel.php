@@ -109,7 +109,9 @@
 					foreach ($accion as $llave => $valor) 
 					{
 						//if(array_values($accion)[0] == $valor) PHP 5.4+
-						if(array_shift(array_slice($accion, 0, 1)) == $valor)
+						//asignar el slice a una variable, ya que da error si lo aplico directo en el shift
+						$tmp=array_slice($accion, 0, 1); // PHP 5.3
+						if(array_shift($tmp) == $valor) //PHP 5.3
 						{
 							//nombre de la accion
 							echo "<tr><td rowspan='".$rowspan."'>".$valor['accion']."</td></tr>";
