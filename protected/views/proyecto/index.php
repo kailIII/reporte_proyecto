@@ -8,8 +8,8 @@ if(Yii::app()->user->nivel==1) //Si es administrador
 	$this->menu=array(
 		array('label'=>'Crear Proyecto', 'url'=>array('create')),
 		array('label'=>'Buscar Proyecto', 'url'=>array('admin')),
-		array('label'=>'Proyectos por Partida', 'url'=>array('totalProyectosPorPartidaSelect')),
-		array('label'=>'Proyectos y Acciones por Partida', 'url'=>array('totalProyectoAccionesPorPartida')),
+		array('label'=>'Por Partida', 'url'=>array('totalProyectosPorPartidaSelect')),
+		array('label'=>'Acciones por Partida', 'url'=>array('totalProyectoAccionesPorPartida')),
 		array('label'=>'Total General por Partidas y Subpartidas', 'url'=>array('generalPartidaSubpartida')),
 		array('label'=>'General Trimestral', 'url'=>array('generalTrimestral')),
 	);

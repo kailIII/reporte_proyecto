@@ -93,6 +93,9 @@ class ProyectoController extends Controller
 					'trimestralExcel',
 					'generalTrimestral',
 					'generalTrimestralExcel',
+					'consolidadoProyectosPorPartida',
+					'imprimirConsolidadoProyectosPorPartida',
+					'imprimirConsolidadoProyectosPorPartidaExcel'
 				),
 				'roles'=>array('1'),
 			),
@@ -320,8 +323,8 @@ class ProyectoController extends Controller
 		$iva=array();
 
 		//Por cada proyecto
-		foreach($proyectos as $llave => $valor
-)		{
+		foreach($proyectos as $llave => $valor)
+		{
 			$pP[$valor->codigo]=$this->partidaGeneralPorProyecto($valor->codigo);
 
 			//IVA del proyecto
@@ -480,6 +483,225 @@ class ProyectoController extends Controller
 		}
 
 		$this->renderPartial('_totalProyectosPorPartidaExcel',array(
+			'totalProyectos'=>$totalProyectos,
+			'totalesProyectosAcciones'=>$totalesProyectosAcciones,
+			'proyectos'=>$proyectos,
+			'pP'=>$pP,
+			'iva'=>$iva,
+			'tipo'=>$tipo,
+			'PRYACC'=>$PRYACC
+		));
+	}
+
+	/**
+	 * Consolidado por partidas
+	 * @param  int $tipo
+	 * @return  mixed
+	 **/
+	public function actionConsolidadoProyectosPorPartida($tipo)
+	{
+		//Layout
+		$this->layout='//layouts/column1';
+
+		//Variable para filtrar la busqueda
+		switch ($tipo) 
+		{
+			case 1:
+				$q = '%'; //todos
+				$PRYACC = 'Proyectos y Acciones Centralizadas';
+				break;
+			case 2:
+				$q = 'P%'; //proyectos
+				$PRYACC = 'Proyectos';
+				break;
+			case 3:
+				$q = 'A%'; //acciones centralizadas
+				$PRYACC = 'Acciones Centralizadas';
+				break;
+			default:
+				$q = '%';
+				$PRYACC = 'Proyectos y Acciones Centralizadas';
+				break;
+		}
+	
+		//Lista de proyectos
+		$proyectos=Proyecto::model()->findAll(array(
+			'condition'=>'codigo_sne LIKE :q',
+			'params'=>array(':q'=>$q),
+			'order'=>'codigo_sne'
+		));
+		//Total de los proyectos
+		$totalProyectos=0.00;
+		//
+		$pP=array();
+		$iva=array();
+
+		//Por cada proyecto
+		foreach($proyectos as $llave => $valor)
+		{
+			$pP[$valor->codigo]=$this->partidaGeneralPorProyecto($valor->codigo);
+
+			//IVA del proyecto
+			$iva[$valor->codigo]=$this->devolverIvaProyecto($valor->codigo);			
+
+			//Totales
+			$totalesProyectosAcciones[$valor->codigo]=$this->totalProyectoAcciones($valor->codigo);
+
+			$totalProyectos=$totalProyectos+$totalesProyectosAcciones[$valor->codigo]['proyecto'];
+		}
+
+		$this->render('consolidadoProyectosPorPartida',array(
+			'totalProyectos'=>$totalProyectos,
+			'totalesProyectosAcciones'=>$totalesProyectosAcciones,
+			'proyectos'=>$proyectos,
+			'pP'=>$pP,
+			'iva'=>$iva,
+			'tipo'=>$tipo,
+			'PRYACC'=>$PRYACC
+		));
+	}
+
+	/**
+	 * Imprimir reporte consolidado de los proyectos por partida
+	 * @param int $tipo
+	 **/
+	public function actionImprimirConsolidadoProyectosPorPartida($tipo)
+	{
+		//mPDF
+		$mPDF1 = Yii::app()->ePdf->mpdf();
+
+		//Formato y orientacion de la pagina
+		$mPDF1 = Yii::app()->ePdf->mpdf('', 'Letter-L');
+
+		//Estilo
+		$stylesheet = file_get_contents(Yii::getPathOfAlias('webroot.css') . '/imprimir.css');
+		//Definir el timezone
+		date_default_timezone_set("America/Caracas");
+		$mPDF1->SetFooter(date('d/m/Y H:i:s'));
+		$mPDF1->WriteHTML($stylesheet, 1);
+
+		//Banner
+		$mPDF1->WriteHTML(CHtml::image(Yii::getPathOfAlias('webroot.images') . '/banner.svg' ));
+
+		//Variable para filtrar la busqueda
+		switch ($tipo) 
+		{
+			case 1:
+				$q = '%'; //todos
+				$PRYACC = 'Proyectos y Acciones Centralizadas';
+				break;
+			case 2:
+				$q = 'P%'; //proyectos
+				$PRYACC = 'Proyectos';
+				break;
+			case 3:
+				$q = 'A%'; //acciones centralizadas
+				$PRYACC = 'Acciones Centralizadas';
+				break;
+			default:
+				$q = '%';
+				$PRYACC = 'Proyectos y Acciones Centralizadas';
+				break;
+		}
+		//Lista de proyectos
+		$proyectos=Proyecto::model()->findAll(array(
+			'condition'=>'codigo_sne LIKE :q',
+			'params'=>array(':q'=>$q),
+			'order'=>'codigo_sne'
+		));
+		//Total de los proyectos
+		$totalProyectos=0.00;
+		//
+		$pP=array();
+		$iva=array();
+
+		//Por cada proyecto
+		foreach($proyectos as $llave => $valor)
+		{
+			$pP[$valor->codigo]=$this->partidaGeneralPorProyecto($valor->codigo);
+
+			//IVA del proyecto
+			$iva[$valor->codigo]=$this->devolverIvaProyecto($valor->codigo);			
+
+			//Totales
+			$totalesProyectosAcciones[$valor->codigo]=$this->totalProyectoAcciones($valor->codigo);
+
+			$totalProyectos=$totalProyectos+$totalesProyectosAcciones[$valor->codigo]['proyecto'];
+		}
+
+		//Pagina completa
+		$mPDF1->WriteHTML($this->renderPartial('_imprimirConsolidadoProyectosPorPartida',array(
+			'totalProyectos'=>$totalProyectos,
+			'totalesProyectosAcciones'=>$totalesProyectosAcciones,
+			'proyectos'=>$proyectos,
+			'pP'=>$pP,
+			'iva'=>$iva,
+			'PRYACC'=>$PRYACC
+		),true));
+
+		//Imprimir
+		$mPDF1->Output('TotalProyectosPorPartida.pdf','D');
+	}
+
+	/**
+	 * Imprimir reporte excel consolidado de los proyectos por partida
+	 * @param  int $tipo
+	 * @return mixed
+	 */
+	public function actionImprimirConsolidadoProyectosPorPartidaExcel($tipo)
+	{
+		//Incrementar la memoria y el tiempo de espera para el script
+		 ini_set("memory_limit", "2048M");
+		 ini_set('max_execution_time', 300); //300 seconds = 5 minutes
+
+		 //Variable para filtrar la busqueda
+		switch ($tipo) 
+		{
+			case 1:
+				$q = '%'; //todos
+				$PRYACC = 'Proyectos y Acciones Centralizadas';
+				break;
+			case 2:
+				$q = 'P%'; //proyectos
+				$PRYACC = 'Proyectos';
+				break;
+			case 3:
+				$q = 'A%'; //acciones centralizadas
+				$PRYACC = 'Acciones Centralizadas';
+				break;
+			default:
+				$q = '%';
+				$PRYACC = 'Proyectos y Acciones Centralizadas';
+				break;
+		}
+	
+		//Lista de proyectos
+		$proyectos=Proyecto::model()->findAll(array(
+			'condition'=>'codigo_sne LIKE :q',
+			'params'=>array(':q'=>$q),
+			'order'=>'codigo_sne'
+		));
+		//Total de los proyectos
+		$totalProyectos=0.00;
+		//
+		$pP=array();
+		$iva=array();
+
+		//Por cada proyecto
+		foreach($proyectos as $llave => $valor)
+		{
+			$pP[$valor->codigo]=$this->partidaGeneralPorProyecto($valor->codigo);
+
+			//IVA del proyecto
+			$iva[$valor->codigo]=$this->devolverIvaProyecto($valor->codigo);			
+
+			//Totales
+			$totalesProyectosAcciones[$valor->codigo]=$this->totalProyectoAcciones($valor->codigo);
+
+			$totalProyectos=$totalProyectos+$totalesProyectosAcciones[$valor->codigo]['proyecto'];
+		}
+
+		$this->renderPartial('_consolidadoProyectosPorPartidaExcel',array(
 			'totalProyectos'=>$totalProyectos,
 			'totalesProyectosAcciones'=>$totalesProyectosAcciones,
 			'proyectos'=>$proyectos,
@@ -1258,6 +1480,7 @@ class ProyectoController extends Controller
 
 	/**
 	 * El total de cada subpartida
+	 * @return  array
 	 */
 	public function devolverTotalSubpartida()
 	{

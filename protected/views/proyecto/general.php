@@ -28,7 +28,9 @@
 		<br><!-- Salto de linea -->
 
 		<!-- Formulario -->
-		<?php $form=$this->beginWidget('CActiveForm', array(
+		<?php
+		
+		$this->beginWidget('CActiveForm', array(
 			'id'=>'proyecto-form_'.$accion->codigo,
 			'action'=>CController::createUrl('proyecto/imprimirReporteGeneral',array('proyecto'=>$proyecto->codigo, 'accion'=>$accion->codigo)),
 			'enableAjaxValidation'=>true,
@@ -37,7 +39,9 @@
 				'validateOnSubmit'=>true,
 				'validateOnChange'=>false,
 			),
-		)); ?>
+		));
+		 
+		?>
 		
 		<?php 
 			//Relacion Unidad Ejecutora - Accion
@@ -97,8 +101,6 @@
 					));
 				?>
 			</div>
-			
-			<?php $this->endWidget(); ?><!-- Termina el formulario -->
 
 			<?php
 			/*			
@@ -109,7 +111,7 @@
 				),false,true);
 			*/				
 			?>
-							
+			<?php $this->endWidget(); ?><!-- Termina el formulario -->
 		<?php	 
 			} //Fin Relacion Unidad Ejecutora - Accion
 			
