@@ -188,10 +188,11 @@
 <div class="row buttons">
 	<?php 
 		$this->widget('zii.widgets.jui.CJuiButton', array(
-		    'buttonType'=>'submit',
+		    'buttonType'=>'button',
 		    'name'=>'btnSubmit',
 		    'value'=>'1',
 		    'caption'=>'PDF',
+		    'onclick'=>new CJavaScriptExpression('function(){window.location = "'.CController::createUrl('proyecto/imprimirConsolidadoProyectosPorPartida', array('tipo'=>$tipo)).'";}'),
 		));
 	?>
 	<?php 
